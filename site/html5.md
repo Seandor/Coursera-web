@@ -17,3 +17,14 @@ html5中增加了很多语义化的标签，如：
 * footer
 
 这些标签都是块级标签，但是他们仅仅有语义化的功能，并没有增加额外的功能。
+
+list（ul,ol）中只允许有li标签。
+
+### html entity reference
+html文档中`<`,`>`,`&`是不能直接使用的，需要用html entity reference`&lt;`,`&gt;`,`&amp;`来表示。
+还有例如`&copy;`用来表示版权的c加小圆符号，键盘上是没有这种符号的。
+`&nbsp;`不是加空格（如果要加空格，正确的做法是用span标签包裹，通过margin来调整），而是如他的名字一样`non-breaking`，用`&nbsp;`连接的字符，不会被分开（调整浏览器大小，会一起换行，不会留一部分在上一行）。
+可以用`&quotes;`表示双引号。
+
+### 关于a标签
+通常inline元素里面是不可以放block-level元素的，但是a标签就可以，在w3c的网站上可以看到a标签既是inline元素，也是block-level元素。a标签中可以用属性target="_blank"让链接在新的标签页中打开。
