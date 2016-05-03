@@ -1,11 +1,11 @@
-# html5学习
+# Html5要点记录
 
 浏览器会按由上至下的顺序解释html文档。
 
-### html5 content models
+### Html5 content models
 html5之前，对于html中的元素可以分为两类一类是`block-level element`另一类是`inline element`。目前这两种传统的内容模型仍然在使用（因为很实用，而且css支持这种模型）。在html5中`block element`对应`flow content`，`inline element`对应`phrasing element`。html5一共有7种内容模型，可以在w3.org网站上参考[kindsofcontent](https://www.w3.org/TR/html5/dom.html#kinds-of-content)。
 
-### html5 semantic element
+### Html5 semantic element
 语义化最基本的应用就是SEO（Search Engine Optimazation）。h1用在表示一个页面的主要内容，对SEO非常重要。
 html5中增加了很多语义化的标签，如：
 
@@ -28,3 +28,5 @@ html文档中`<`,`>`,`&`是不能直接使用的，需要用html entity referenc
 
 ### 关于a标签
 通常inline元素里面是不可以放block-level元素的，但是a标签就可以，在w3c的网站上可以看到a标签既是inline元素，也是block-level元素。a标签中可以用属性target="_blank"让链接在新的标签页中打开。
+
+SPA (Single Page Application)
