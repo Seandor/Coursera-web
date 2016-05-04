@@ -15,4 +15,4 @@
 
 #### 具体化
 最具体的选择器组合优先。问题是如何判断哪个选择器更具体。
-![](https://github.com/Seandor/Coursera-web/tree/gh-pages/site/images/specificity.png)
+![specificity](images/specificity.png)
