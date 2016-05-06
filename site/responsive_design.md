@@ -1,5 +1,7 @@
 # 响应式设计
 
+描述响应式设计，CSS Media Query只是响应式设计的一种方法。
+
 ### Media Query
 
 ```@css
