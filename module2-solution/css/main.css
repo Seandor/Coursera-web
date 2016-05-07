@@ -1,0 +1,83 @@
+/**************Base style******************/
+body, h1, h3, section, div {
+	margin: 0;
+	padding: 0;
+}
+body {
+	font-family: 'Comic Sans MS', cursive;
+}
+h1 {
+	text-align: center;
+	margin: 10px 0;
+}
+
+.container {
+	margin: 0 auto;
+	overflow: hidden;
+}
+
+section {
+	float: left;
+	padding: 40px 10px 20px;
+	position: relative;
+	box-sizing: border-box;
+	border: 3px solid black;
+}
+
+.s1, .s2, .s3 {
+	background-color: #979797;
+}
+
+.s1 h3 {
+	background-color: #DE9398;
+}
+.s2 h3 {
+	background-color: #CA4149;
+}
+.s3 h3 {
+	background-color: #E9CD9E;
+}
+section h3 {
+	display: block;
+	color: white;	
+	border-left: 3px solid black;
+	border-bottom: 3px solid black;
+	padding: 5px 15px;
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+/**************Mobile**********************/
+@media (max-width: 767px) {
+	.container {
+		width: 700px;
+	}
+	section {
+		width: 100%;
+		margin-bottom: 20px;
+	}
+}
+/**************Tablet**********************/
+@media (min-width: 768px) and (max-width: 991px) {
+	.container {
+		width: 800px;
+	}
+	.s1, .s2 {
+		width: 45%;
+		margin-right: 5%;
+		margin-bottom: 20px;
+	}
+	.s3 {
+		width: 95%;
+	}
+}
+/**************Desktop*********************/
+@media (min-width: 992px) {
+	.container {
+		width: 1000px;
+	}
+	section {
+		width: 30%;
+		margin-right: 3.3%;
+	}
+}
