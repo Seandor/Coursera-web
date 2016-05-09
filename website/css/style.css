@@ -247,7 +247,7 @@ body {
 		padding-top: 5px;
 		font-size: 6vw;/* 1vw = 1% of viewport width*/
 	}
-	#menu-tile, #special-tile {
+	#menu-tile, #specials-tile {
 		width: 280px;
 		margin: 0 auto 15px;
 	}
