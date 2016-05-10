@@ -277,7 +277,7 @@ body {
 		font-size: 6vw;/* 1vw = 1% of viewport width*/
 	}
 	/*Home page*/
-	#menu-tile, #specials-tile {
+	#menu-tile, #specials-tile, #map-tile {
 		width: 280px;
 		margin: 0 auto 15px;
 	}
