@@ -150,6 +150,55 @@ body {
 #menu-categories-title + div {
 	margin-bottom: 50px;
 }
+/*END MENU CATEGORIES PAGE*/
+/*SINGLE CATEGORY PAGE*/
+.menu-item-tile {
+	margin-bottom: 25px;
+}
+.menu-item-tile hr {
+	width: 80%;
+}
+.menu-item-tile .menu-item-price {
+	font-size: 1.1em;
+	text-align: right;
+	/*Ensure the price is right align when the price tag is too long*/
+	margin-left: -15px;
+	/*move the price tag up*/
+	margin-top: -15px;
+}
+.menu-item-tile .menu-item-price span {
+	font-size: .6em;
+}
+.menu-item-photo {
+	position: relative;
+	border: 2px solid #3F0C1F;
+	overflow: hidden;
+	padding: 0;
+	margin-right: -15px;
+	margin-left: auto;
+	margin-bottom: 20px;
+	/*Ensure the picture unstreched*/
+	max-width: 250px;
+}
+.menu-item-photo div {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 80px;
+	background-color: #557c3e;
+	text-align: center;
+}
+.menu-item-description {
+	padding-right: 30px;
+}
+.menu-item-title {
+	margin: 0 0 10px;
+}
+.menu-item-details {
+	font-size: .9em;
+	font-style: italic;
+}
+
 /*FOOTER*/
 .panel-footer {
 	margin-top: 30px;
@@ -267,6 +316,16 @@ body {
   }
   .panel-footer section hr {
   	width: 50%;
+  }
+  /*for single category page*/
+  .menu-item-photo {
+  	margin-right: auto;
+  }
+  .menu-item-tile .menu-item-price {
+  	text-align: center;
+  }
+  .menu-item-description {
+  	text-align: center;
   }
 }
 
