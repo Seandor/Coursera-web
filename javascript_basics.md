@@ -9,6 +9,7 @@
 ``` <script src="js/script.js"> <script>```
 
 The javascript code would be executed sequetially from top to bottom.
+
 HTML file
 ```html
 <!doctype html>
@@ -35,8 +36,8 @@ Js file
 var x = "hello, world!";
 ```
 console output: 
-```hello, world!
-after hello world```
+hello, world!
+after hello world
 
 The javascript engine inside the browser is a single threaded engine. as the javascript code executed, it will executed completely. 
 
