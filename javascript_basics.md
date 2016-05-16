@@ -7,7 +7,7 @@
 * inside an external file.
 ``` <script src="js/script.js"> <script>```
 
-Javascript代码是从上到下顺序执行的，并且浏览器中javascript引擎是一个单线程的引擎，javascript一旦执行，就会一次性执行完。
+Javascript代码是从上到下顺序执行的，并且浏览器中javascript引擎是一个单线程的引擎，javascript代码一旦执行，就会一次性执行完。
 
 ```html
 <!-- html code -->
@@ -36,8 +36,10 @@ var x = "hello, world!";
 ```
 
 控制台输出: 
+```
 hello, world!
 after hello world!
+```
 
 ### Javascript 函数和作用域
 javascript中函数的参数都是可选的。
@@ -134,3 +136,13 @@ else {
 Javascript中不要将`{`放在单独一行。
 
 Javascript中`"" || "hello"`将返回"hello"而不是true，也就是说这个表达式在进行type coercion之前就返回值了。使用`Boolean("" || "hello")`，才会返回true。
+
+### prototype
+
+### DOM操作
+window 
+document
+document instanceof HTMLDocument
+textContent
+innerHTML
+document.querySelector
