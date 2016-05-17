@@ -146,3 +146,6 @@ document instanceof HTMLDocument
 textContent
 innerHTML
 document.querySelector
+
+### Ajax
+Ajax的原理和事件相应类似，JS代码是一行一行执行的，如果中间有一行代码使用的Ajax请求，JS引擎会将这个请求和相应的JS处理函数地址发送给HTTP Requestor（负责处理HTTP请求的组件），JS会继续向下执行，不会等待HTTP响应。在某一时刻，JS代码可能已经全部执行完，这时收到服务器的响应，JS引擎会根据处理函数地址去执行响应动作。
