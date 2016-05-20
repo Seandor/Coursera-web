@@ -30,3 +30,5 @@ html文档中`<`,`>`,`&`是不能直接使用的，需要用html entity referenc
 通常inline元素里面是不可以放block-level元素的，但是a标签就可以，在w3c的网站上可以看到a标签既是inline元素，也是block-level元素。a标签中可以用属性target="_blank"让链接在新的标签页中打开。
 
 SPA (Single Page Application)
+
+There are some ghost files on my github repository.
