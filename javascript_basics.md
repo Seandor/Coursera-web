@@ -137,7 +137,113 @@ Javascript中不要将`{`放在单独一行。
 
 Javascript中`"" || "hello"`将返回"hello"而不是true，也就是说这个表达式在进行type coercion之前就返回值了。使用`Boolean("" || "hello")`，才会返回true。
 
+
+### Javascript Object
+#### 创建对象
+使用`new Object()`创建对象：
+```javascript
+var company = new Object();
+// 自动创建属性
+company.name = "Facebook";
+company.ceo = new Object();
+company.ceo.firstName = "Mark";
+company.ceo.favColor = "blue";
+// Note that you can not use dot notation here.
+// 只有当属性名为合法的javascript变量名的时候才可以使用dot notation.
+company["stock of company"] = 110;
+```
+
+使用Object literal创建对象：
+```javascript
+var facebook = {
+  name: "Facebook",
+  ceo: {
+    firstName: "Mark",
+    favColor: "blue"
+  },
+  // 属性加不加双引号都是字符串
+  "stock of company": 110
+}
+```
+
+使用上述两种方法创建的对象的结果是一样的，但明显使用Object literal要更加直观。
+
+#### Function
+在javascript中function属于'First-Class Data Types'，意思是你能对一个变量或者对象进行的操作都可以对函数进行。
+
+Javascript中函数只是regular Object，但是有一些特殊的属性。
+
+```javascript
+function multiply(x, y) {
+  return x * y;
+}
+console.log(multiply(5, 3));
+// you can add property to a function
+multiply.version = "v.1.0.0"
+
+// function factory
+function makeMultiplier(multiplier) {
+  var myFunc = function (x) {
+    return multiplier * x;
+  }
+  return myFunc;
+}
+
+var multiplyBy3 = makeMultiplier(3);
+var multiplyBy5 = makeMultiplier(5);
+
+// 将函数作为参数传递
+function doOperationOn(x, operation) {
+  return operation(x);
+}
+
+var result = doOperationOn(5, multiplyBy3);
+```
+
+### 按值传递 & 按引用传递
+Javascript中原始类型是按值传递的，对象类型按引用传递。但是从实现原理上理解，它们实际上都是按值传递的。举例如下：
+```javascript
+var a = 7;
+var b = a;
+```
+![value](images/value.png)
+
+```
+var a = {x:7};
+var b = a;
+```
+![reference](images/reference.png)
+
+图中可以清晰的看出原始类型和对象类型在内存中的区别，原始类型的变量在内存中存储的是实际的值，而对象类型在内存中存储的却是另一个内存地址（用来存储对象数据）。
+
 ### prototype
+引子：
+```javascript
+// function constructors
+function Circle(radius) {
+  this.radius = radius;
+
+  this.getArea = function () {
+    return Math.PI * Math.pow(this.radius, 2);
+  };
+}
+
+var myCircle = new Circle(10);
+```
+使用上述方法创建的函数对象，每创建一次函数对象内的属性radius和getArea函数都会被创建一次，对于radius来说多次创建是合理的，但是对于getArea函数，只需要创建一次就可以，所有Circle的示例共享该函数。
+```javascript
+// function constructors
+function Circle(radius) {
+  this.radius = radius;
+}
+
+Circle.prototype.getArea = function () {
+  return Math.PI * Math.pow(this.radius, 2);
+}
+
+var myCircle = new Circle(10);
+```
+使用这种方法来创建函数构造器就和其他语言中的类非常类似。
 
 ### DOM操作
 window 
