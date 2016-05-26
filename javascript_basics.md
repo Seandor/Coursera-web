@@ -84,11 +84,11 @@ function B() {
 }
 ```
 
-上面代码的输出结果是2而不是5。因为函数B是在全局作用域中__定义__的，所以它的外部引用是全局作用域。x会首先函数B中搜索，发现没找到后，就开始在它的外部作用域中搜索，而它的外部作用域是全局作用域而不是函数A作用域。
+上面代码的输出结果是2而不是5。函数B是在全局作用域中__定义__的，所以它的外部引用是全局作用域。x会首先函数B中搜索，发现没找到后，就开始在它的外部作用域中搜索，而它的外部作用域是全局作用域而不是函数A作用域。
 
 无论一个函数是在何处__执行__，就处理变量作用域而言，只和该函数物理上被定义所处的环境有关。
 
-上文提到的Lexical作用域也被称为函数作用域，但Lexical作用域还有一层意思，是指函数对除了Global以外的外部环境的引用。当然除了Global作用域外，也只剩Function作用域了。
+上文提到的Lexical作用域也被称为函数作用域，而Lexical作用域还有一层意思，是指函数对除了Global以外的外部环境的引用。当然除了Global作用域外，也只剩Function作用域了。
 
 ```javascript
 function foo() {
@@ -127,8 +127,7 @@ person = {
 Javascript中的原始类型用于表示__单一__，不可变的值。
 
 * `Boolean` 只用两种值：true和false。
-* `undefined` 声明但从未被设值的变量。变量在内存中的位置已经确定，但是没有设定值。只有一种值：undefined。你可以个一个变量赋值为undefined，但是你最好永远不要这样做。
-    - 和他的本意矛盾。
+* `undefined` 声明但从未被设值的变量。变量在内存中的位置已经确定，但是没有设定值。只有一种值：undefined。给一个变量赋值为undefined不会有语法错误，但是这会和他原本的定义矛盾。
     - `undefined / 5`的值为`NaN`。
 * `null` 表示没有值。只有一种值：null。你可以给一个变量赋值为null。
 * `number` javascript中唯一的数值类型。实际是一个双精度64位浮点类型。
@@ -308,7 +307,7 @@ console.log(doubleAll(10)); // its own exec env
 ```
 最后一句代码中doubleAll函数执行了，但是它是如何获得multiplier的呢，如果没有闭包，它确实无法获得multiplier。当一个函数从另一个函数中返回时，Javascript会在内存中保留被返回函数的lexical作用域环境，所以即使在外部执行该函数，它仍然能够获得multiplier的值。
 
-### 8. Namespace & IIFES
+### 8. Namespace & IIFE
 Javascript语言本身并没有Namespace，但我们可以很容易伪造Namespace（实现和Namespace一样的功能）。伪造Namespace通常使用对象来完成，将私有的变量和方法存储在对象的属性中。但是对于有些变量我们可能只是临时使用并不希望放在对象中，如果不放在对象中，那么又会出现全部变量造成的困扰。
 
 Javascript可以使用一种叫做Immediate Invoked Function Expression来做一种封装。
