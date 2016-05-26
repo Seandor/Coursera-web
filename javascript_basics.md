@@ -310,7 +310,7 @@ console.log(doubleAll(10)); // its own exec env
 ### 8. Namespace & IIFE
 Javascript语言本身并没有Namespace，但我们可以很容易伪造Namespace（实现和Namespace一样的功能）。伪造Namespace通常使用对象来完成，将私有的变量和方法存储在对象的属性中。但是对于有些变量我们可能只是临时使用并不希望放在对象中，如果不放在对象中，那么又会出现全部变量造成的困扰。
 
-Javascript可以使用一种叫做Immediate Invoked Function Expression来做一种封装。
+Javascript可以使用一种叫做Immediately Invoked Function Expression(IIFE)来做一种封装。
 ```javascript
 // IIFE
 (function () {
