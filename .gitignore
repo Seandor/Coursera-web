@@ -1,2 +1,12 @@
 *.map
 *.pdf
+bootstrap.css
+bootstrap.min.css
+bootstrap-theme.css
+bootstrap-theme.min.css
+jquery-1.12.3.min.js
+jquery-2.1.4.min.js
+bootstrap.js
+bootstrap.min.js
+npm.js
+

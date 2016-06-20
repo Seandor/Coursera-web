@@ -154,7 +154,7 @@ else {
 
 Javascript中不要将`{`放在单独一行。
 
-Javascript中`"" || "hello"`将返回"hello"而不是true，也就是说这个表达式在进行type coercion之前就返回值了。使用`Boolean("" || "hello")`，才会返回true。因此在JS代码中常用这样的结构来表示一种逻辑，即如果左边的变量为空，则使用右边的变量。
+Javascript中`"" || "hello"`将返回"hello"而不是true，也就是说这个表达式在进行type coercion之前就返回值了。使用`Boolean("" || "hello")`，才会返回true。因此在JS代码中常用这样的结构来表示一种逻辑，即如果左边的值为空，则使用右边的值，后者相当于默认值。
 ```javascript
 name = name || name_substitution;
 ```
