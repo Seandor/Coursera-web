@@ -56,6 +56,8 @@ compare(3, 4, 5); //the third arguments is not used in the function, but it's pe
 
 Javascript中只有两种作用域，Global和Function(aka lexical)。定义在全局下的变量或函数可以在任何地方执行，而定义在函数中的变量或**函数**只能在函数内部使用。
 
+> 还有块作用域，只是用到的比较少。
+
 #### 2.1 Javascript 作用域链（Scope Chain）
 
 * Javacript代码都需要在一个Execution Context中执行
