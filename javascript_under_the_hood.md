@@ -21,6 +21,7 @@
   1. [Variable Environment](#variable-environment)
   1. [Scope Chain](#scope-chain)
   1. [Asynchronous](#asynchronous)
+  1. [Dynamic Typing](#dynamic-typing)
 
 
 ### Syntax Parser
@@ -116,7 +117,7 @@ b();
 ```
 `b`也是存储了一个内存地址，但`b`是函数，Javascript Engine让它可以使用`()`进行函数调用，`b`存储的地址正是函数的入口，所以打印出了`Called b!`。
 
-这里额外说明`undefined`这个primitive type，可以看到Javascript Engine在Execution Context的创建阶段为变量默认赋值为`undefined`，所以我们不应该将任何变量赋值为`undefined`，虽然这完全没有语法错误，但这样做你就无法知道`undefined`是Javascript Engine赋的值还是你自己赋的值。我们应该使用`null`为变量赋默认值。
+这里额外说明`undefined`这个primitive type，可以看到Javascript Engine在Execution Context的创建阶段为变量默认赋值为`undefined`，所以我们不应该将任何变量手动赋值为`undefined`，虽然这完全没有语法错误，但这样做你就无法知道`undefined`是Javascript Engine赋的值还是你自己赋的值。我们应该使用`null`为变量赋默认值。
 
 ### Single Threaded
 One command at a time.
@@ -140,7 +141,7 @@ function a() {
 
 a();
 ```
-将这段代码存入一个JS文件并运行它。首先一个Global Execution Context被创建，在它的creation phase中那三样东西会被创建，这里不在详述，并且分配函数`b` 和 `a`会的内存空间，再到Execution Context的执行阶段，一行行执行代码，前几行都是函数定义不会执行，当执行到
+将这段代码存入一个JS文件并运行它。首先一个Global Execution Context被创建，在它的creation phase中那三样东西会被创建，这里不在详述，并且分配函数`b` 和 `a`的内存空间，再到Execution Context的执行阶段，一行行执行代码，前几行都是函数定义不会执行，当执行到
 ```javascript
 a();
 ```
@@ -179,7 +180,7 @@ undefined   # inside b's execution context
 因为每个变量`myVar`都处在自己的Execution Context中，在Execution Context的创建阶段，为`myVar`分配内存空间，并将`myVar`作为Execution Context中的Global Object的一个属性，所以这个Global Object也被称为Variable Object或者Variable Environment。
 
 ### Scope Chain
-Scope是指可以访问变量的地方，和Variable Environment一样，只是换个说法。为了展示Scope Chain，先来看一段和上面类似的代码：
+Scope是指可以访问变量的地方，和Variable Environment相近。为了理解什么是Scope Chain，先来看一段和上面类似的代码：
 
 ```javascript
 function b() {
@@ -194,11 +195,11 @@ function a() {
 var myVar = 1;
 a();
 ```
-注意到当函数`b`被执行时，它的Execution Context中并没有`myVar`。有些人可能认为会打印出`2`，因为我们是在`a`中调用的`b`；又或许有些人认为会打印出`undefined`，因为`myVar`没有在`b`函数中定义。但实际结果是`1`。
+注意到当函数`b`被执行时，它的Execution Context中并没有`myVar`。有些人可能认为会打印出`2`，因为我们是在`a`中调用的`b`；又或许有些人认为会打印出`undefined`，因为`myVar`没有在`b`函数中定义。但实际的打印结果是`1`。
 
-当我们在使用或者请求一个Variable时，Javascript Engine不仅仅在当前运行的Execution Context中寻找该变量。Execution Context中的第三样东西这时派上了用场，即对于外部环境的引用。这里的外部环境取决于该函数的[Lexcial Environment](#lexcial-environment)。因而在此处，函数`b`的lexcial environment是Global Execution Context。当Javascript Engine在当前环境下找不到变量`myVar`时就会去它的外部环境中找，再去外部环境的外部环境找，直到最外层的Global Execution Context，因为它的外部环境引用为null。这整个搜索变量的流程中，外部引用之间构成了一条链，这就是Scope Chain。
+当我们在使用或者请求一个Variable时，Javascript Engine不仅仅在当前运行的Execution Context中寻找该变量。Execution Context中的第三样东西这时派上了用场，即对于外部环境的引用。这里的外部环境取决于该函数的[Lexcial Environment](#lexical-environment)。因而在此处，函数`b`的lexcial environment是Global Execution Context。当Javascript Engine在当前环境下找不到变量`myVar`时就会去它的外部环境中找，再去外部环境的外部环境找，直到最外层的Global Execution Context，因为它的外部环境引用为null。这整个搜索变量的流程中，外部引用之间构成了一条链，这就是Scope Chain。
 
-但是Execution Context的外部环境为什么取决于该函数的[Lexcial Environment](#lexcial-environment)。可以这样去想，函数`b`的内存空间是由谁分配的，谁就是它的外部环境引用。这里当然就是Global Execution Context了。
+但是Execution Context的外部环境为什么取决于该函数的[Lexcial Environment](#lexical-environment)。可以这样去想，函数`b`的内存空间是由谁分配的，谁就是它的外部环境引用。这里当然就是Global Execution Context了。
 
 ES6中引入了`let`关键字并可以使用块作用域：
 ```javascript
@@ -210,7 +211,7 @@ if (a === 1) {
 ### Asynchronous
 One more at a time.
 
-Javascript代码执行时可能一部分代码执行完了，另一部分代码需要过一段时间才会被执行，例如一段Ajax请求的代码，只有当请求返回结果时，后续的处理函数才会被执行。这种情况就是程序的异步行为。前面提到Javascript是单线程，同步运行的，那么它是怎么处理异步行为的。
+Javascript代码执行时可能一部分代码执行完了，另一部分代码需要过一段时间才会被执行，例如一段Ajax请求的代码，只有当请求返回结果时，后续的处理函数才会被执行。这种就是程序的异步行为。可以看出，程序的运行在时间上的分布可以是不连续的，这种程序被称为量子程序:sweat_smile:。前面提到Javascript是单线程，同步运行的，那么它是怎么处理异步行为的。
 
 Javascript Engine必须存在于一个环境中运行，比如浏览器，但浏览器中并不只有Javascript Engine，还有渲染引擎，或者Http模块等，Javascript Engine可以和这些模块交流。但是Javascript Engine内部完全是同步的。从浏览器的角度看，Javascript可以实现异步的行为，是因为Javascript在运行的同时，浏览器可以帮忙处理诸如点击事件，http请求等。下面看一个例子：
 
@@ -237,5 +238,42 @@ console.log('finished execution');
 finished function
 finished execution
 ```
-但如果在那个long running function运行期间点击浏览器，打印顺序会是怎样？
+但如果在那个long running function运行期间点击浏览器，打印顺序会是怎样？在看结果之前需要先理解Event Queue的工作机制。Javascript Engine内部存在一个Event Queue，专门用来存放各种事件消息。Javascript Engine只有在Execution Stack为空的时候，才会周期性地去检查Event Queue，如果Event Queue中有事件，它再去看当该事件触发时，有没有函数需要运行。回到这段代码，当long running function在运行时，我们点击了浏览器，这时浏览器将点击事件加入Event Queue，注意到函数运行和事件加入Event Queue是同时发生的。但此时还处于long running function的Execution Context中，3秒后函数执行完毕，它的Execution Context出栈，回到Global Execution Context，这时运行最后一段代码，最后Global Execution Context也出栈，此时Execution Stack为空，Javascript Engine检测到Event Queue中有一个点击事件并且有对应的处理函数，这时去执行该事件侦听函数，一个新的Execution Context被创建，执行然后结束。所以打印结果为：
+```
+finished function
+finished execution
+click event!
+```
 
+### Dynamic Typing
+You don' tell the engine what type of a variable holds, it figures it out when the code is running.
+
+Static Typing 的语言需要在定义变量时就指定其类型，并且不能再改变该变量类型。Javascript不是这样，它是Dynamic Typing的语言，所以它没有定义变量类型的关键字，代码再运行的时候Javascript Engine自己决定变量的类型。
+
+### Primitive Type
+A type of data that represents a single value.
+
+换句话说，它不是一个Object，因为Object是一组Name value pairs。Javascript中有6种primitive types：
+
+- `undefined`   # represents lack of existence, used by the engine
+- `null`    # represents lack of existence, used by programmers
+- `Boolean` # true or false
+- `Number`  # floating point number
+- `String`  # A sequence of characters
+- `Symbol`  # Used for ES6
+
+### Operators
+A special function that is syntactically (written) differently.
+
+一般Operator会有两个输入参数，并返回一个结果。先来看一段代码：
+```
+var a = 3 + 4;
+console.log(a);
+```
+我猜你已经知道执行结果了，答案是7。
+
+```
+3 + 4; // infix notation
++3 4;  // prefix notation
+3 4+;  // post fix notation
+```
