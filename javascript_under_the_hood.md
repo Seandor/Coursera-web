@@ -4,14 +4,23 @@
 
 人们常说编程语言是一门工具，这句话有几分道理，旨在强调用什么样的编程语言并不重要，重要的是能完成工作。这一点非常符合工具本身的定义，指能够方便人们完成工作的器具。但编程语言不仅仅是一个工具，它同样也是软件产品的载体。所以我们很有必要弄清楚一门编程语言背后的原理，这样能够是我们的软件产品更可靠，也能让开发者快速地解决BUG。Javascript是当今世界最为流行地编程语言之一，其背后的运行机理却是被很多使用者忽视。当然这也和Javascript的现状有关，Javascript有着极其丰富的类库和框架，很多初学者一开始就接触JQuery，AngularJS这些类库和框架，虽然用它们能快速地做出用原生JS较难实现的功能，但也会让新手无法看到隐藏其中的Javascript原理，进而在遇到BUG的时候难以解决。本文旨在将自己对于Javscript的理解记录下来，以便未来的自己能够快速的复习这些知识。
 
-[Mastery learning](https://en.wikipedia.org/wiki/Mastery_learning)的教学模式认为只有熟练掌握了当前的知识才能进行下一步的学习。也就是说很多知识点的掌握都是建立在对其他基础知识的掌握之上的。本文以概念为目录，层层揭开Javascript背后的原理。概念其中穿插代码实例，帮助进一步理解概念。
+我认为很多知识点的掌握都是建立在对其他基础知识的掌握之上的。本文以概念为目录，层层揭开Javascript背后的原理。概念其中穿插代码实例，帮助进一步理解概念。
 
 
 ## Table of Contents
 
   1. [Syntax Parser](#syntax-parser)
   1. [Lexical Environment](#lexical-environment)
-  1. []()
+  1. [Name Value Pair](#name-value-pair)
+  1. [Object](#object)
+  1. [Execution Context](#execution-context)
+  1. [Hoisting](#hoisting)
+  1. [Single Threaded](#single-threaded)
+  1. [Synchronous](#synchronous)
+  1. [Function Innovation](#function-innovation)
+  1. [Variable Environment](#variable-environment)
+  1. [Scope Chain](#scope-chain)
+  1. [Asynchronous](#asynchronous)
 
 
 ### Syntax Parser
@@ -49,14 +58,184 @@ There are a lots of lexical environments. Which one is currently running is mana
 - Special `this` variable
 - A reference to its outer environment
 
-这里global object的意思是指在该Execution context中的任何位置都可以访问到的object。
+这里global object的意思是指在该Execution context中的任何位置都可以访问到的object，它其实也是Variable Object/Environment，在Execution Context中使用var声明的变量都会成为该global object的一个属性。Hoisting中有对Execution Context更深入的内容。
 
----
-代码实例
+*代码实例*
 ```javascript
 
 ```
-将这段空的js代码加载至浏览器运行，打开Chrome Dev Tool -> Console, 虽然什么也没显示，但js文件被加载了，syntax parser开始工作，发现没有代码可以去解析，所以也没有代码去执行。正因为JS文件被加载了，所以Javascript Engine会创建一个Execution Context，
+将这段空的js代码加载至浏览器运行，打开Chrome Dev Tool -> Console, 虽然什么也没显示，但js文件被加载了，syntax parser开始工作，发现没有代码可以去解析，所以也没有代码去执行。又因为JS文件被加载了，所以Javascript Engine会创建一个Execution Context，它其中包含了一个全局对象，特殊的`this`变量和一个外部环境的引用。在Console中输入`this`会得到一个Window object，它也就是当前Execution Context下的全局对象。外部环境的引用为null，因为它是Global Execution Context，处于最外层。
+```
+> this
+< Window {stop: function, open: function, alert: function, confirm: function, prompt: function…}
+```
 
+### Hoisting
+为了解释这个概念，先来看一段代码：
+```javascript
+console.log(a);
+b();
 
+var a = 'Hello World!';
+
+function b() {
+    console.log('Called b!');
+}
+```
+在很多编程语言中，上面这段代码可能会报错无法执行。但Javascript并不会报错，其运行结果为：
+```
+undefined
+Called b!
+```
+从结果来看像是Javascript Engine将变量和函数提到最前面去了，这个现象就叫做Hoisting。有的文章或教程会这样去解释Hoisting：
+```javascript
+var a;
+
+function b() {
+    console.log('Called b!');
+}
+
+console.log(a);
+b();
+
+a = 'Hello World!';
+```
+这里看起来像是Javascript Engine移动了变量和函数的位置。虽然这很形象的解释了Hoisting，但这样的解释并不准确。并且又该如何解释变量`a`只有声明部分被提上去？Javascript Engine没有特定的规则决定在Hoisting时对函数和变量的处理不一样，实际上Javascript Engine并不知道什么是Hoisting，Hoisting只是一个**现象**。真正被执行的并不是你写的代码, 而是被Javascript Engine翻译后的代码(What's being executing is not what you've written, it's been translated by the Javascript Engine). Javascript Engine没有移动代码位置再去执行它。理解Hoisting，需要从Execution Context入手。
+
+每个Execution Context都会经历两个阶段:
+1. Creation phase
+2. Execution phase
+
+在Execution Context的创建阶段，不仅会生成上面提到的 Global object，this, 外部环境引用，还会为变量和函数分配内存空间。回到第一段代码，再应用这一过程。首先是Global Execution Context的创建阶段，Javascript Engine 为变量`a`分配了内存并且默认赋值为`undefined`，为函数`b`也分配内存空间并存储了函数的内容，这时变量a和函数b都存储了一个内存地址。接下来进入Execution Context的Execution phase，开始一行行执行代码：
+```javascript
+console.log(a);
+```
+首先遇到`a`并没有报错是因为，在Execution Context的创建阶段已经分配了内存空间，并且默认赋值为`undefined`，结果也打印了`undefined`。
+```javascript
+b();
+```
+`b`也是存储了一个内存地址，但`b`是函数，Javascript Engine让它可以使用`()`进行函数调用，`b`存储的地址正是函数的入口，所以打印出了`Called b!`。
+
+这里额外说明`undefined`这个primitive type，可以看到Javascript Engine在Execution Context的创建阶段为变量默认赋值为`undefined`，所以我们不应该将任何变量赋值为`undefined`，虽然这完全没有语法错误，但这样做你就无法知道`undefined`是Javascript Engine赋的值还是你自己赋的值。我们应该使用`null`为变量赋默认值。
+
+### Single Threaded
+One command at a time.
+
+### Synchronous
+One at a time.
+
+指的是代码按顺序一行行执行。Javascript完全是单线程，同步执行的。
+
+### Function Innovation
+Running a function.
+
+Javascript 中使用`()`来调用函数。先看一段代码:
+```javascript
+function b() {
+}
+
+function a() {
+    b();
+}
+
+a();
+```
+将这段代码存入一个JS文件并运行它。首先一个Global Execution Context被创建，在它的creation phase中那三样东西会被创建，这里不在详述，并且分配函数`b` 和 `a`会的内存空间，再到Execution Context的执行阶段，一行行执行代码，前几行都是函数定义不会执行，当执行到
+```javascript
+a();
+```
+Javascript Engine 知道这是一个函数调用，这时一个新的Execution Context 会被创建，并且放在Execution stack 上。实际上，每次函数调用都会创建一个新的Execution Context，并且同样有creation phase 和 execution phase。
+
+当函数`a`被执行时，经历它的Execution context创建阶段到执行阶段，发现里面又有一个函数`b`的调用，又一个新的Execution Context被创建，并放上Execution stack。函数`b`的Execution Context 执行阶段发现没有代码可以执行，它的执行阶段完成，这时它的Execution Context 会出栈(pop off the stack)，再回到`a`的Execution Context的执行阶段，再到Global Execution Context。
+
+### Variable Environment
+Where the variables live.
+
+先看一段代码：
+```javascript
+function b() {
+	var myVar;
+    console.log(myVar);
+}
+
+function a() {
+	var myVar = 2;
+    console.log(myVar);
+	b();
+}
+
+var myVar = 1;
+console.log(myVar);
+a();
+console.log(myVar);
+```
+这段代码的运行结果是：
+```
+1   # inside global execution context
+2   # inside a's execution context
+undefined   # inside b's execution context
+1   # inside global execution context
+```
+因为每个变量`myVar`都处在自己的Execution Context中，在Execution Context的创建阶段，为`myVar`分配内存空间，并将`myVar`作为Execution Context中的Global Object的一个属性，所以这个Global Object也被称为Variable Object或者Variable Environment。
+
+### Scope Chain
+Scope是指可以访问变量的地方，和Variable Environment一样，只是换个说法。为了展示Scope Chain，先来看一段和上面类似的代码：
+
+```javascript
+function b() {
+    console.log(myVar);
+}
+
+function a() {
+	var myVar = 2;
+	b();
+}
+
+var myVar = 1;
+a();
+```
+注意到当函数`b`被执行时，它的Execution Context中并没有`myVar`。有些人可能认为会打印出`2`，因为我们是在`a`中调用的`b`；又或许有些人认为会打印出`undefined`，因为`myVar`没有在`b`函数中定义。但实际结果是`1`。
+
+当我们在使用或者请求一个Variable时，Javascript Engine不仅仅在当前运行的Execution Context中寻找该变量。Execution Context中的第三样东西这时派上了用场，即对于外部环境的引用。这里的外部环境取决于该函数的[Lexcial Environment](#lexcial-environment)。因而在此处，函数`b`的lexcial environment是Global Execution Context。当Javascript Engine在当前环境下找不到变量`myVar`时就会去它的外部环境中找，再去外部环境的外部环境找，直到最外层的Global Execution Context，因为它的外部环境引用为null。这整个搜索变量的流程中，外部引用之间构成了一条链，这就是Scope Chain。
+
+但是Execution Context的外部环境为什么取决于该函数的[Lexcial Environment](#lexcial-environment)。可以这样去想，函数`b`的内存空间是由谁分配的，谁就是它的外部环境引用。这里当然就是Global Execution Context了。
+
+ES6中引入了`let`关键字并可以使用块作用域：
+```javascript
+if (a === 1) {
+    let b = 2;
+}
+```
+
+### Asynchronous
+One more at a time.
+
+Javascript代码执行时可能一部分代码执行完了，另一部分代码需要过一段时间才会被执行，例如一段Ajax请求的代码，只有当请求返回结果时，后续的处理函数才会被执行。这种情况就是程序的异步行为。前面提到Javascript是单线程，同步运行的，那么它是怎么处理异步行为的。
+
+Javascript Engine必须存在于一个环境中运行，比如浏览器，但浏览器中并不只有Javascript Engine，还有渲染引擎，或者Http模块等，Javascript Engine可以和这些模块交流。但是Javascript Engine内部完全是同步的。从浏览器的角度看，Javascript可以实现异步的行为，是因为Javascript在运行的同时，浏览器可以帮忙处理诸如点击事件，http请求等。下面看一个例子：
+
+```javascript
+// long running function
+function waitThreeSeconds() {
+    var ms = 3000 + new Date().getTime();
+    while (new Date() < ms){}
+    console.log('finished function');
+}
+
+function clickHandler() {
+    console.log('click event!');   
+}
+
+// listen for the click event
+document.addEventListener('click', clickHandler);
+
+waitThreeSeconds();
+console.log('finished execution');
+```
+运行这段代码，可以发现打印结果为：
+```
+finished function
+finished execution
+```
+但如果在那个long running function运行期间点击浏览器，打印顺序会是怎样？
 
