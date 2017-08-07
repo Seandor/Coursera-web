@@ -408,13 +408,13 @@ Javascript中函数是一种特殊的对象，所以可以给函数添加其它�
 
 ```javascript
 function greet() {
-    console.log('hi);
+    console.log('hi');
 }
 
 greet.language = 'English';
 console.log(greet.language);
 ```
-Functions are objects.
+First Class Functions 意味着你可以将函数作为参数传递，可以在函数中返回函数，因为函数本身只是Object而已。
 
 ### Expression
 A unit of code that results in a value.
@@ -544,7 +544,7 @@ greet('John', 'Doe', 'es');
 Immediafely Invoked Function Expression.
 
 前面已经提到了什么是Function Expression：
-```
+```javascript
 var greeting = function(name) {
     return 'Dear ' + name;
 }('John');
@@ -629,7 +629,7 @@ fs[2]();
 ```
 现在真正理解了闭包，也不会对这样的打印结果感到惊讶。在没有引入ES6之前，Javascript没有块级作用域，因此要想保存`i`的值，我们可以用函数包裹：
 
-```
+```javascript
 function buildFunctions2() {
  
     var arr = [];
@@ -656,7 +656,7 @@ fs2[2]();
 ```
 
 ES6的写法：
-```
+```javascript
 function buildFunctions2() {
  
     var arr = [];
@@ -681,12 +681,256 @@ fs2[1]();
 fs2[2]();
 ```
 
+### Callback Function
+A function you give to another function, to be run when the other function is finished.
+
+回调函数并不是一类特殊的函数，只是在一种特殊的使用场景下，当另一个函数完成时可以反过来调用(calls back)你传递的函数。具体看一个例子：
+```javascript
+function sayHiLater() {
+ 
+    var greeting = 'Hi!';
+    
+    setTimeout(function() {
+        
+        console.log(greeting);
+        
+    }, 3000);
+    
+}
+
+sayHiLater();
+
+function tellMeWhenDone(callback) {
+ 
+    var a = 1000; // some work
+    var b = 2000; // some work
+    
+    callback(); // the 'callback', it runs the function I give it!
+    
+}
+
+tellMeWhenDone(function() {
+   
+    console.log('I am done!');
+    
+});
+```
+
+### Function Currying
+Creating a copy of a function but with some preset parameters.
+
+函数的Execution Context的创建阶段会初始化一个特殊的`this`对象，前文也提到过这个`this`在不同的情况下会指向不同的内容，有些时候我们希望能够设置`this`应该指向谁，Function Object有三个特殊的函数`bind()`, `apply()`和`call()`就是用来主动设置`this`对象的。实例中具体看这三个函数的用法。
+
+```javascript
+var person = {
+    firstname: 'John',
+    lastname: 'Doe',
+    getFullName: function() {
+        
+        var fullname = this.firstname + ' ' + this.lastname;
+        return fullname;
+        
+    }
+}
+
+var logName = function(lang1, lang2) {
+
+    console.log('Logged: ' + this.getFullName());
+    console.log('Arguments: ' + lang1 + ' ' + lang2);
+    console.log('-----------');
+    
+}
+
+var logPersonName = logName.bind(person);
+logPersonName('en');
+```
+`logName.bind(person)`返回一个和`logName`几乎一样的函数，唯一的不同是我们指定了该函数在它的Execution Context创建阶段`this`的值为`person`对象。
+
+```javascript
+// function currying
+function multiply(a, b) {
+    return a*b;   
+}
+
+var multipleByTwo = multiply.bind(this, 2);
+console.log(multipleByTwo(4));
+
+var multipleByThree = multiply.bind(this, 3);
+console.log(multipleByThree(4));
+```
+上面的例子可以看到通过`bind`方法创建了两个`mutiply`函数的复制，并将参数`a`预设为2和3。Function Currying在计算科学中很常用。
 
 
+```javascript
+logName.call(person, 'en', 'es');
+logName.apply(person, ['en', 'es']);
+
+```
+`call`和`apply`都是直接调用函数，并将第一个参数设置为`this`的值。这两个函数的区别是`apply`接受数组形式的参数列表。
+
+### Functional Programming
+Javascript虽然看起来和C，Java等语言很像，但它本质上是更接近于Lisp，ML等的函数式编程语言。正是因为First Class Function，Javascript才可以用函数式编程的方式思考以及编写代码。先来看一个简单的例子：假设有数组`arr1 = [1, 2, 3]`，如何将`Arr1`中的每个成员都乘以二获得`arr2 = [2, 4, 6]`？先看一个传统的写法：
+
+```javascript
+arr1 = [1, 2, 3];
+
+var arr2 = [];
+for (var i = 0; i < Arr1.length; i++) {
+    Arr2.push(Arr1[i] * 2);
+}
+```
+函数的出现就是为了代码复用，有了First Class Function，可以将函数的粒度变得更小，实现一些非函数式编程难以做到的功能。下面用函数式编程的方式重写上面代码：
+```javascript
+arr1 = [1, 2, 3];
+
+function mapForEach(arr, fn) {
+    var newArr = [];
+    for (var i = 0; i < arr.length; i++) {
+        newArr.push(
+            fn(arr[i])
+        );
+    }
+    return newArr;
+}
+
+var arr2 = mapForEach(arr, function(item) {
+    return item * 2;
+});
+```
+有些这段代码，可以做一些更有趣的事情：
+```javascript
+var checkPastLimit = function(limiter, item) {
+    return item > limiter;
+}
+
+var arr3 = mapForEach(arr1, checkPastLimit.bind(this, 1));
+
+console.log(arr3);
+
+var checkPastLimitSimplified = function(limiter) {
+    return function(limiter, item) {
+        return item > limiter;
+    }.bind(this, limiter);
+};
+```
+函数式编程的内容太多，这里只是简单提一下。
+
+### Inheritance
+One Object gets access to the properties and methods of anothor Object.
+
+Classical Inheritance：
+Verbose
+    friend
+    protected
+    private
+    interface
+    
+Prototypal Inheritance
+
+simple
+    flexible 
+    extensible
+    easy to understand
+
+```javascript
+var person = {
+    firstname: 'Default',
+    lastname: 'Default',
+    getFullName: function() {
+        return this.firstname + ' ' + this.lastname;  
+    }
+}
+
+var john = {
+    firstname: 'John',
+    lastname: 'Doe'
+}
+
+// don't do this EVER! for demo purposes only!!!
+john.__proto__ = person;
+console.log(john.getFullName());
+console.log(john.firstname);
+
+var jane = {
+    firstname: 'Jane'   
+}
+
+jane.__proto__ = person;
+console.log(jane.getFullName());
+
+person.getFormalFullName = function() {
+    return this.lastname + ', ' + this.firstname;   
+}
+
+console.log(john.getFormalFullName());
+console.log(jane.getFormalFullName());
+```
+
+### Everything is an Object (or a primitive)
 
 
+### Reflection
+An Object can look at itself, listing and changing its properties and methods.
 
+### Function Constructor & '.prototype'
+A normal function that is used to construct objects.
 
+Javascript 听起来似乎和Java有点关系，它的语法看起来也有点像Java，但是Javascript和Java完全不是一类编程语言。当初Javascript为了吸引Java程序员才起名叫做Javascript，还有下面这样的语法也是纯粹的市场策略。因为Javascript根本没有class，即使ES6开始已经有class关键字，但是这个class和Java，C#中的类也完全不同。
+```javascript
+var john = new Person();
+```
+
+下面以一个例子来简单介绍function constructor:
+```javascript
+function Person(firstname, lastname) {
+ 
+    console.log(this);
+    this.firstname = firstname;
+    this.lastname = lastname;
+    console.log('This function is invoked.');
+    // return { greeting: 'I got in the way' };
+    
+}
+
+var john = new Person('John', 'Doe');
+console.log(john);
+
+var jane = new Person('Jane', 'Doe');
+console.log(jane);
+```
+`var john = new Person('John', 'Doe');`使用了new关键字，new本身是一个操作符，它首先会创建出一个空的Object，然后执行函数`Person`，当函数`Person`的Execution Context创建时，它的`this`变量会指向那个空的Object，并且如果函数没有返回值，那么该Object会被函数自动返回。所以function contructor就是用来构建Object的。
+
+使用new关键字创建出来的Object的原型(prototype)是什么呢？我们可以接着上面的例子在浏览器中查看:
+```javascript
+> john.__proto__
+```
+打印结果为：
+```
+Object {constructor: function}
+constructor:function Person(firstname, lastname)
+__proto__:Object
+```
+如果继续展开constructor属性你会发现，john.__proto__实际指向的就是函数Person的prototype属性，只不过prototype属性默认有一个constructor属性指向函数自身了(循环引用)。
+
+关于函数的prototype属性很出现误解，因为Person对象的prototype属性并不是Person对象的原型，实际上这个prototype属性只有在使用new关键字构建对象时，才会起到作用。其作用是使用new创建的新的Object的原型将会指向它。
+
+```javascript
+Person.prototype.getFullName = function() {
+    return this.firstname + ' ' + this.lastname;   
+}
+
+var john = new Person('John', 'Doe');
+console.log(john);
+
+var jane = new Person('Jane', 'Doe');
+console.log(jane);
+
+Person.prototype.getFormalFullName = function() {
+    return this.lastname + ', ' + this.firstname;   
+}
+
+console.log(john.getFormalFullName());
+```
 
 
 
