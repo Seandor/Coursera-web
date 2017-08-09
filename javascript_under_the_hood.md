@@ -35,6 +35,13 @@
   1. [Arguments](#arguments)
   1. [IIFE](#iife)
   1. [Closure](#closure)
+  1. [Callback Function](#callback-function)
+  1. [Function Currying](#function-currying)
+  1. [Functional Programming](#functional-programming)
+  1. [Inheritance](#inheritance)
+  1. [Reflection](#reflection)
+  1. [Function Constructor](#function-constructor)
+  1. [Pure Prototypal Inheritance](#pure-prototypal-inheritance)
 
 
 ### Syntax Parser
@@ -65,7 +72,7 @@ Where something sits physically in the code you write.
 ### Name Value Pair
 A name which maps to a unique value.
 
-```
+```javascript
 // address is a name, '111 Main St.' is value.
 address = '111 Main St.';
 ```
@@ -238,9 +245,9 @@ if (a === 1) {
 ### Asynchronous
 One more at a time.
 
-Javascript代码可以执行一段代码不等它完成就可以继续往下执行，例如一段Ajax请求的代码，只有当请求返回结果时，后续的处理函数才会被执行。这种就是程序的异步行为。可以看出，程序的运行在时间上的分布可以是不连续的，这种程序被称为量子程序:sweat_smile:。前面提到Javascript是单线程，同步运行的，那么它是怎么处理异步行为的。
+Javascript代码可以执行一段代码不等它完成就可以继续往下执行(看起来像是同时在做两件事)，例如一段Ajax请求的代码，只有当请求返回结果时，后续的处理函数才会被执行。这种就是程序的异步行为。前面提到Javascript是单线程，同步运行的，那么它是怎么处理异步行为的。
 
-Javascript Engine必须存在于一个环境中运行，比如浏览器，但浏览器中并不只有Javascript Engine，还有渲染引擎，或者Http模块等，Javascript Engine可以和这些模块交流。但是Javascript Engine内部完全是同步的。从浏览器的角度看，Javascript可以实现异步的行为，是因为Javascript在运行的同时，浏览器可以帮忙处理诸如点击事件，http请求等。下面看一个例子：
+Javascript Engine必须存在于一个环境中运行，比如浏览器，但浏览器中并不只有Javascript Engine，还有渲染引擎，或者Http模块等，Javascript Engine可以和这些模块交流。但是Javascript Engine内部完全是同步的。从浏览器的外部来看，Javascript可以实现异步的行为，是因为Javascript在运行的同时，浏览器可以帮忙处理诸如点击事件，http请求等。下面看一个例子：
 
 ```javascript
 // long running function
@@ -276,6 +283,8 @@ finished execution
 click event!
 ```
 
+可以看出，程序的运行在时间上的分布可以是不连续的，这种程序被称为量子程序:sweat_smile:。
+
 ### Dynamic Typing
 You don' tell the engine what type of a variable holds, it figures it out when the code is running.
 
@@ -289,11 +298,11 @@ A type of data that represents a single value.
 换句话说，它不是一个Object，因为Object是一组Name value pairs。Javascript中有6种primitive types：
 
 - `undefined`   # represents lack of existence, used by the engine
-- `null`    # represents lack of existence, used by programmers
-- `Boolean` # true or false
-- `Number`  # floating point number
-- `String`  # A sequence of characters
-- `Symbol`  # Used for ES6
+- `null`        # represents lack of existence, used by programmers
+- `Boolean`     # true or false
+- `Number`      # floating point number
+- `String`      # A sequence of characters
+- `Symbol`      # Used for ES6
 
 ### Operators
 A special function that is syntactically (written) differently.
@@ -573,7 +582,7 @@ function(name) {
 这两种都是IIFE，具体用哪种看个人喜好。
 
 ### Closure
-当初刚学习到闭包这个概念时，我觉得非常难以理解，即使我看了很多资料，也没有完全理解。当时我对闭包的理解是
+当初刚学习到闭包这个概念时，我觉得非常难以理解，即使我看了很多资料，也没有完全理解。当时我对闭包的理解有一个总结
 
 > 闭包指的是当一个函数在它的lexical作用域之外__执行__时，它仍能记得并使用它的lexical作用域。
 
@@ -680,6 +689,7 @@ fs2[0]();
 fs2[1]();
 fs2[2]();
 ```
+最后，对于闭包为什么叫做闭包，我有一个理解是定义在函数内部的函数使用的变量被包裹它的函数给困住了/关起来了，包裹它的函数也是内部函数的lexical environment。
 
 ### Callback Function
 A function you give to another function, to be run when the other function is finished.
@@ -818,19 +828,9 @@ var checkPastLimitSimplified = function(limiter) {
 ### Inheritance
 One Object gets access to the properties and methods of anothor Object.
 
-Classical Inheritance：
-Verbose
-    friend
-    protected
-    private
-    interface
-    
-Prototypal Inheritance
+C++，Java等语言中的继承属于经典继承(Classical Inheritance)，它很成功同时也较为复杂，尤其是软件系统足够庞大后，即使软件开发过程中都遵循最佳实践，内部对象的关系仍旧会显得错综复杂。
 
-simple
-    flexible 
-    extensible
-    easy to understand
+Javascript中实现继承的方式被称为原型继承(Prototypal Inheritance)，相较于经典继承来说，它比较简单，灵活且易于理解。先来看一个例子：
 
 ```javascript
 var person = {
@@ -865,14 +865,17 @@ person.getFormalFullName = function() {
 console.log(john.getFormalFullName());
 console.log(jane.getFormalFullName());
 ```
+Javascript中除了primitive类型外，所有的一切都是Object。
 
-### Everything is an Object (or a primitive)
+每一个Object都有一个`__proto__`的属性，指向它的原型，而该原型也有`__proto__`属性指向它的原型，这一连串的原型上溯的过程被形象地称为原型链。而处在所有原型链根部必然是`Object {}`对象，它的`__proto__`属性为`null`。
+
+当使用`.`操作符去访问Object的属性时，Javascript Engine会先在该Object上找，如果找不到就继续在它的原型对象上找，直到原型链的根部; 如果找到了则会立即返回，所以处在原型链前头的属性可以覆盖原型链后面的属性。
 
 
 ### Reflection
 An Object can look at itself, listing and changing its properties and methods.
 
-### Function Constructor & '.prototype'
+### Function Constructor
 A normal function that is used to construct objects.
 
 Javascript 听起来似乎和Java有点关系，它的语法看起来也有点像Java，但是Javascript和Java完全不是一类编程语言。当初Javascript为了吸引Java程序员才起名叫做Javascript，还有下面这样的语法也是纯粹的市场策略。因为Javascript根本没有class，即使ES6开始已经有class关键字，但是这个class和Java，C#中的类也完全不同。
@@ -910,10 +913,11 @@ Object {constructor: function}
 constructor:function Person(firstname, lastname)
 __proto__:Object
 ```
-如果继续展开constructor属性你会发现，john.__proto__实际指向的就是函数Person的prototype属性，只不过prototype属性默认有一个constructor属性指向函数自身了(循环引用)。
+如果继续展开constructor属性你会发现，`john.__proto__`实际指向的就是函数`Person`的`prototype`属性，只不过`prototype`属性默认有一个constructor属性指向函数自身了(循环引用)。
 
-关于函数的prototype属性很出现误解，因为Person对象的prototype属性并不是Person对象的原型，实际上这个prototype属性只有在使用new关键字构建对象时，才会起到作用。其作用是使用new创建的新的Object的原型将会指向它。
+关于函数的`prototype`属性很出现误解，因为Person对象的`prototype`属性并不是Person对象的原型，实际上这个`prototype`属性只有在使用new关键字构建对象时，才会起到作用。其作用是使用new创建的新的Object的原型将会指向它。
 
+继续上面的例子，看`prototype`属性的具体应用：
 ```javascript
 Person.prototype.getFullName = function() {
     return this.firstname + ' ' + this.lastname;   
@@ -931,10 +935,30 @@ Person.prototype.getFormalFullName = function() {
 
 console.log(john.getFormalFullName());
 ```
+可以看到即使在使用`new`关键字创建过对象后，我们仍然可以在`Person`的`prototype`属性上添加新的方法，并且这个方法对于前面创建的对象也是立即可用的。这应该算是原型继承的一个优点。
 
+我们通常在使用Function Constructor的时候，都会将属性直接定义在`this`上，因为不同的对象这些属性通常都不一样；而方法都是定义在`prototype`属性上，一方面是因为方法都是通用的，另一方面也是为了节省空间。如果直接将方法直接定义在`this`上，那么每创建一个新的对象，该方法就会占一份内存空间；如果将方法定义在`prototype`上，所有使用该function constructor的对象都共用一块内存空间。
 
+如果在使用function constructor的时候忘记加`new`，那么函数依然会正常执行，然后返回值`undefined`被赋给了新的变量。所以我们在定义function constructor的时候约定俗成地将首字母大写，这样就容易避免前述错误的发生。
 
+### Pure Prototypal Inheritance
+前面提到的function constructor就是为了模仿其他语言的语法来实现原型继承，所以看起来有点奇怪。而在现代浏览器中一般都已经支持使用纯粹的原型继承来创建对象，接下来看一个简单的例子：
 
+```javascript
+var person = {
+    firstname: 'Default',
+    lastname: 'Default',
+    greet: function() {
+        return 'Hi ' + this.firstname;   
+    }
+}
+
+var john = Object.create(person);
+john.firstname = 'John';
+john.lastname = 'Doe';
+console.log(john);
+```
+使用`Object.create`方法会创建一个新的对象，并将传入的对象作为新对象的原型。就是如此简单。实验发现传入参数的`this`是指向新创建的对象的，这点应该是`create`方法内部实现。
 
 
 
