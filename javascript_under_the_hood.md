@@ -517,6 +517,8 @@ c.log();
 
 对于第三种情况，很多人认为这是Javascript的一个bug，我们也不去深究，毕竟语言也是有瑕疵的。对于这个bug，很常见的一种方法是利用Object的引用传递，在函数开始的时候就将`this`赋值给一个新的变量。
 
+ES6中的箭头函数不仅仅提供了更紧凑的语法结构，更重要的是它解决了上述第三种情况`this`丢失的问题，箭头函数使用的是lexical this，即使用函数定义环境中的this。
+
 ### Arguments
 The parameters you pass to a function.
 
